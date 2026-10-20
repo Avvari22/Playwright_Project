@@ -1,0 +1,2 @@
+Base URL: https://www.saucedemo.com
+Logging in with standard user: standard_user

@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--
+  Build note: angle brackets inside code samples are stored as placeholder
+  tokens and substituted with HTML character references at render time by
+  scripts/generate-framework-pdf.js. Opening this file directly in a browser
+  will therefore show the raw placeholder tokens inside those code samples.
+-->
+<meta charset="UTF-8" />
+<title>Playwright Automation Framework</title>
+<style>
+  :root {
+    --ink: #1a2233;
+    --muted: #5b667a;
+    --line: #d9dee8;
+    --accent: #2f6f4f;
+    --accent-soft: #eef6f1;
+    --code-bg: #f4f6fa;
+    --code-ink: #22303f;
+    --head-bg: #f7f9fc;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    color: var(--ink);
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 11pt;
+    line-height: 1.55;
+  }
+
+  /* ---------- Cover ---------- */
+  .cover {
+    padding: 28mm 18mm 0 18mm;
+    page-break-after: always;
+  }
+  .cover .kicker {
+    font-size: 10pt;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .cover h1 {
+    font-size: 30pt;
+    line-height: 1.15;
+    margin: 8mm 0 4mm 0;
+    color: var(--ink);
+    border: none;
+    padding: 0;
+  }
+  .cover .subtitle {
+    font-size: 13pt;
+    color: var(--muted);
+    margin-bottom: 12mm;
+  }
+  .cover .rule {
+    height: 4px;
+    width: 60mm;
+    background: var(--accent);
+    margin: 0 0 12mm 0;
+    border-radius: 2px;
+  }
+  .cover .meta {
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    padding: 5mm 0;
+    margin-top: 6mm;
+    width: 100%;
+  }
+  .cover .meta table { width: 100%; border: none; margin: 0; }
+  .cover .meta td {
+    border: none;
+    padding: 1.5mm 4mm 1.5mm 0;
+    vertical-align: top;
+    background: none;
+  }
+  .cover .meta td.k {
+    color: var(--muted);
+    font-weight: 600;
+    white-space: nowrap;
+    width: 34mm;
+  }
+
+  /* ---------- Content ---------- */
+  .content { padding: 0 18mm 18mm 18mm; }
+
+  h2 {
+    font-size: 16pt;
+    color: var(--ink);
+    margin: 10mm 0 3mm 0;
+    padding-bottom: 2mm;
+    border-bottom: 2px solid var(--accent);
+    page-break-after: avoid;
+  }
+  h2:first-child { margin-top: 0; }
+
+  h3 {
+    font-size: 12.5pt;
+    color: var(--accent);
+    margin: 6mm 0 2mm 0;
+    page-break-after: avoid;
+  }
+
+  p { margin: 0 0 3mm 0; }
+  ul, ol { margin: 0 0 3mm 0; padding-left: 6mm; }
+  li { margin-bottom: 1.5mm; }
+
+  a { color: var(--accent); text-decoration: none; }
+
+  strong { color: var(--ink); }
+
+  /* ---------- Tables ---------- */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 3mm 0 5mm 0;
+    font-size: 10pt;
+    page-break-inside: avoid;
+  }
+  thead { display: table-header-group; }
+  th {
+    background: var(--head-bg);
+    text-align: left;
+    font-weight: 700;
+    color: var(--ink);
+    border: 1px solid var(--line);
+    padding: 2mm 3mm;
+  }
+  td {
+    border: 1px solid var(--line);
+    padding: 2mm 3mm;
+    vertical-align: top;
+  }
+  tbody tr:nth-child(even) td { background: #fbfcfe; }
+
+  /* ---------- Code ---------- */
+  code {
+    font-family: "Cascadia Mono", "Consolas", "Courier New", monospace;
+    background: var(--code-bg);
+    color: var(--code-ink);
+    padding: 0.3mm 1.2mm;
+    border-radius: 2px;
+    font-size: 9.5pt;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    border-radius: 3px;
+    padding: 3mm 4mm;
+    margin: 3mm 0 5mm 0;
+    font-family: "Cascadia Mono", "Consolas", "Courier New", monospace;
+    font-size: 8.8pt;
+    line-height: 1.42;
+    color: var(--code-ink);
+    white-space: pre;
+    overflow: hidden;
+    page-break-inside: avoid;
+  }
+  pre code {
+    background: none;
+    padding: 0;
+    font-size: inherit;
+  }
+
+  /* ---------- Callouts ---------- */
+  .note {
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 3px;
+    padding: 3mm 4mm;
+    margin: 3mm 0 5mm 0;
+    font-size: 10pt;
+  }
+  .note strong { color: var(--accent); }
+
+  .flow {
+    font-size: 8.4pt;
+    line-height: 1.25;
+  }
+
+  /* ---------- Footer ---------- */
+  .doc-footer {
+    margin-top: 12mm;
+    border-top: 1px solid var(--line);
+    padding-top: 3mm;
+    color: var(--muted);
+    font-size: 9pt;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== COVER ===================== -->
+<section class="cover">
+  <div class="kicker">Framework Documentation</div>
+  <h1>Playwright Automation<br />Framework</h1>
+  <div class="rule"></div>
+  <div class="subtitle">End-to-end test automation for SauceDemo &mdash; architecture, conventions and usage guide.</div>
+
+  <div class="meta">
+    <table>
+      <tr><td class="k">Project</td><td>playwright_project</td></tr>
+      <tr><td class="k">Test Target</td><td>SauceDemo (https://www.saucedemo.com)</td></tr>
+      <tr><td class="k">Automation Tool</td><td>Playwright Test (@playwright/test ^1.64.0)</td></tr>
+      <tr><td class="k">Language</td><td>TypeScript (CommonJS)</td></tr>
+      <tr><td class="k">Reporting</td><td>HTML Report + Allure</td></tr>
+      <tr><td class="k">Runtime</td><td>Node.js v24</td></tr>
+      <tr><td class="k">Document Version</td><td>1.0</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ===================== CONTENT ===================== -->
+<section class="content">
+
+<h2>1. Overview</h2>
+<p>This document describes the architecture, structure, configuration, and conventions of the Playwright end-to-end test automation framework used in this project. It is intended for anyone who needs to understand, maintain, extend, or onboard onto the framework.</p>
+<p>The framework follows a <strong>modular, layered design</strong> separating test intent from UI interaction details:</p>
+<ul>
+  <li><strong>Tests</strong> express <em>what</em> is being verified.</li>
+  <li><strong>Page Objects</strong> express <em>how</em> the UI is interacted with.</li>
+  <li><strong>Fixtures</strong> supply <em>test data and dependencies</em>.</li>
+  <li><strong>Utils</strong> provide <em>cross-cutting infrastructure</em> (environment loading, config).</li>
+</ul>
+<p>This separation keeps tests readable and resilient, and localizes change: when the UI changes, only the affected Page Object is edited, not every test.</p>
+
+<h2>2. Technology Stack</h2>
+<table>
+  <thead>
+    <tr><th>Component</th><th>Package</th><th>Version</th><th>Purpose</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Test runner / automation API</td><td><code>@playwright/test</code></td><td>^1.64.0</td><td>Test execution, assertions, fixtures, reporters</td></tr>
+    <tr><td>Browser automation</td><td><code>playwright</code></td><td>^1.64.0</td><td>Browser engine control</td></tr>
+    <tr><td>Node type definitions</td><td><code>@types/node</code></td><td>^26.6.5</td><td>Node.js typings for TypeScript</td></tr>
+    <tr><td>Allure reporter</td><td><code>allure-playwright</code></td><td>^3.4.3</td><td>Allure result generation</td></tr>
+    <tr><td>Allure CLI</td><td><code>allure-commandline</code></td><td>^2.36.0</td><td>Serving / generating Allure HTML reports</td></tr>
+  </tbody>
+</table>
+<p><strong>Runtime:</strong> Node.js &nbsp;|&nbsp; <strong>Module system:</strong> CommonJS (<code>"type": "commonjs"</code> in <code>package.json</code>)</p>
+
+<h2>3. Directory Structure</h2>
+<pre><code>Playwright_Project/
+├── .env                      # Environment variables (URLs, credentials)
+├── .gitignore                # Git ignore rules
+├── package.json              # Dependencies and project metadata
+├── package-lock.json         # Locked dependency tree
+├── playwright.config.ts      # Central Playwright configuration
+├── FRAMEWORK.md              # Framework document (Markdown source)
+├── FRAMEWORK.html            # Styled HTML template (build input for the PDF)
+├── FRAMEWORK.pdf             # Framework document (generated PDF)
+│
+├── scripts/                  # Documentation tooling
+│   └── generate-framework-pdf.js   # Renders FRAMEWORK.html to FRAMEWORK.pdf
+│
+├── tests/                    # Test specifications (*.spec.ts)
+│   ├── navigate.spec.ts      # Login / navigation tests
+│   └── inventory.spec.ts     # Product inventory tests
+│
+├── pages/                    # Page Object Model classes
+│   └── LoginPage.ts          # Login page interactions
+│
+├── fixtures/                 # Test data providers / fixtures
+│   └── test.ts               # User credential provider
+│
+├── utils/                    # Shared utilities
+│   └── envHelpers.ts         # .env parser + ENV export
+│
+├── playwright-report/        # Generated HTML report (git-ignored)
+├── allure-results/           # Raw Allure result data (git-ignored)
+└── test-results/             # Traces, screenshots, videos (git-ignored)</code></pre>
+
+<h3>Layer Responsibilities</h3>
+<table>
+  <thead><tr><th>Layer</th><th>Folder</th><th>Responsibility</th></tr></thead>
+  <tbody>
+    <tr><td>Test specs</td><td><code>tests/</code></td><td>Contain test cases and assertions. Should read like a test script in business language.</td></tr>
+    <tr><td>Page Objects</td><td><code>pages/</code></td><td>Encapsulate locators and UI actions for a single screen. One class per page.</td></tr>
+    <tr><td>Fixtures / Data</td><td><code>fixtures/</code></td><td>Supply test data (users, roles) and reusable setup.</td></tr>
+    <tr><td>Utilities</td><td><code>utils/</code></td><td>Infrastructure helpers unrelated to any single page.</td></tr>
+    <tr><td>Config</td><td>root</td><td>Global execution settings (<code>playwright.config.ts</code>).</td></tr>
+  </tbody>
+</table>
+
+<h2>4. Configuration (playwright.config.ts)</h2>
+<p>The configuration centralizes all execution behaviour.</p>
+<h3>Key Settings</h3>
+<table>
+  <thead><tr><th>Setting</th><th>Value</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td><code>testDir</code></td><td><code>./tests</code></td><td>Root folder Playwright scans for specs.</td></tr>
+    <tr><td><code>fullyParallel</code></td><td><code>true</code></td><td>Test files and tests run in parallel.</td></tr>
+    <tr><td><code>forbidOnly</code></td><td><code>!!process.env.CI</code></td><td>Blocks accidental <code>test.only</code> on CI.</td></tr>
+    <tr><td><code>retries</code></td><td>2 on CI, 0 locally</td><td>Auto-retry of failed tests on CI only.</td></tr>
+    <tr><td><code>workers</code></td><td>1 on CI, auto locally</td><td>Parallel worker count.</td></tr>
+    <tr><td><code>reporter</code></td><td>html, allure-playwright</td><td>Dual reporting.</td></tr>
+    <tr><td><code>use.baseURL</code></td><td><code>ENV.BASE_URL</code> (fallback SauceDemo)</td><td>Base URL for <code>page.goto('/')</code>.</td></tr>
+    <tr><td><code>use.trace</code></td><td><code>on-first-retry</code></td><td>Captures Playwright trace when a test retries.</td></tr>
+  </tbody>
+</table>
+
+<h3>Projects</h3>
+<p>Currently one active project:</p>
+<ul>
+  <li><strong>chromium</strong> &mdash; <code>devices['Desktop Chrome']</code></li>
+</ul>
+<p>Firefox, WebKit, mobile viewports, and branded browser channels are present but commented out. Uncomment a block to add a browser to the matrix; each <code>projects</code> entry runs the entire suite.</p>
+
+<h3>Environment Loading</h3>
+<p>The config imports <code>ENV</code> from <code>utils/envHelpers</code> and uses <code>ENV.BASE_URL</code> as the <code>baseURL</code>. A commented-out <code>dotenv</code> block shows the alternative approach &mdash; the custom <code>envHelpers</code> parser is used instead so the framework has <strong>no dependency on <code>dotenv</code></strong>.</p>
+
+<h2>5. Environment Variable Handling (utils/envHelpers.ts)</h2>
+<p>The project uses a <strong>custom <code>.env</code> parser</strong> instead of the <code>dotenv</code> package.</p>
+
+<h3>How It Works</h3>
+<ol>
+  <li><code>parseEnv()</code> resolves <code>.env</code> against <code>process.cwd()</code>.</li>
+  <li>If the file is missing, it returns an empty object (graceful degradation &mdash; no crash).</li>
+  <li>Each line is trimmed; blanks and lines starting with <code>#</code> are skipped.</li>
+  <li>Lines are split on the <strong>first</strong> <code>=</code> so values may contain <code>=</code>.</li>
+  <li>Surrounding single/double quotes are stripped from values.</li>
+  <li>Every parsed key is also written to <code>process.env</code> <strong>only if not already set</strong> (real environment variables take precedence over <code>.env</code>).</li>
+  <li>The parsed map is exported as the constant <code>ENV</code>.</li>
+</ol>
+
+<h3>Exported API</h3>
+<pre><code>export const ENV: Record@@LT@@string, string@@GT@@;</code></pre>
+<p>Access values as <code>ENV.KEY_NAME</code>. Because it is a <code>Record@@LT@@string, string@@GT@@</code>, unknown keys return <code>undefined</code> at runtime &mdash; prefer added named helpers if strong typing is required.</p>
+
+<h3>Current .env Keys</h3>
+<pre><code>BASE_URL                https://www.saucedemo.com
+STANDARD_USER_NAME      standard_user
+STANDARD_USER_PASSWORD  secret_sauce
+LOCKED_USER_NAME        locked_out_user
+LOCKED_USER_PASSWORD    secret_sauce
+PROBLEM_USER_NAME       problem_user
+PROBLEM_USER_PASSWORD   secret_sauce</code></pre>
+
+<div class="note">
+  <strong>Security note:</strong> <code>.env</code> holds credentials and is listed in <code>.gitignore</code>. Never commit real secrets. A <code>.env.example</code> (recommended addition) should document required keys with placeholder values.
+</div>
+
+<h2>6. Page Object Model (pages/)</h2>
+<p>Each page is a class encapsulating locators and actions. This keeps selectors in one place and tests free of raw selectors.</p>
+
+<h3>Example Class: LoginPage</h3>
+<pre><code>export class LoginPage {
+    readonly page: Page;
+    readonly usernameInput: Locator;
+    readonly passwordInput: Locator;
+    readonly loginButton: Locator;
+
+    constructor(page: Page) { ... }
+
+    async navigateToLoginPage(url: string = '/'): Promise@@LT@@void@@GT@@ { ... }
+    async getPageTitle(): Promise@@LT@@string@@GT@@ { ... }
+    async login(username: string, password: string): Promise@@LT@@void@@GT@@ { ... }
+}</code></pre>
+
+<h3>Conventions</h3>
+<ul>
+  <li><strong>Locators are <code>readonly</code> class fields</strong>, initialized in the constructor from the injected <code>Page</code>. They are defined once and reused.</li>
+  <li><strong>Selector strategy:</strong> prefer user-facing locators &mdash; <code>[data-test="..."]</code> attributes, <code>getByRole</code>, <code>getByPlaceholder</code>, <code>getByText</code>. Avoid brittle CSS/XPath chains and index-based selection.</li>
+  <li><strong>Action methods</strong> are <code>async</code> and return <code>Promise@@LT@@void@@GT@@</code> (or a typed value). They perform UI interactions only.</li>
+  <li><strong>Validation</strong> &mdash; guard clauses throw descriptive errors early (e.g. <code>login()</code> throws if credentials are empty) rather than failing opaquely deep in the browser call.</li>
+  <li><strong>One class per page</strong>, named <code>@@LT@@PageName@@GT@@Page</code>, in its own file under <code>pages/</code>.</li>
+</ul>
+
+<h3>Adding a New Page Object</h3>
+<ol>
+  <li>Create <code>pages/@@LT@@Name@@GT@@Page.ts</code>.</li>
+  <li>Define <code>readonly</code> locators in the constructor.</li>
+  <li>Add <code>async</code> action methods with descriptive verb names.</li>
+  <li>Import into the relevant spec and instantiate with the fixture <code>page</code>.</li>
+</ol>
+<h2>7. Fixtures & Test Data (fixtures/test.ts)</h2>
+<p>Test data is centralized so credentials never appear inline in specs.</p>
+
+<h3>User Provider</h3>
+<pre><code>export type UserType = 'standard' | 'lockedOut' | 'problem';
+
+export function getUser(type: UserType): UserCredentials;</code></pre>
+<ul>
+  <li><code>UserType</code> is a <strong>union of allowed roles</strong> &mdash; TypeScript rejects invalid role strings at compile time.</li>
+  <li>The <code>users</code> map binds each role to <code>ENV</code> credentials.</li>
+  <li><code>getUser()</code> returns a <code>{ username, password }</code> object and <strong>throws early</strong> if credentials are missing, surfacing configuration errors at the source.</li>
+</ul>
+
+<h3>Usage in a Test</h3>
+<pre><code>import { getUser } from '../fixtures/test';
+
+const standardUser = getUser('standard');
+await loginPage.login(standardUser.username, standardUser.password);</code></pre>
+<p>This indirection means tests reference <strong>roles</strong>, not literal credential strings, and <code>.env</code> key names never leak into test files.</p>
+
+<h3>Extending</h3>
+<ul>
+  <li>Add a new role: extend the <code>UserType</code> union <strong>and</strong> the <code>users</code> map.</li>
+  <li>The <code>UserCredentials</code> interface (<code>{ username: string; password: string }</code>) is exported for reuse.</li>
+</ul>
+
+<h2>8. Test Specifications (tests/)</h2>
+<p>Specs are named <code>*.spec.ts</code> and organized by feature/area. Each uses <code>test.describe</code> for grouping and <code>test.beforeEach</code> for shared setup.</p>
+
+<h3>navigate.spec.ts &mdash; Login / Navigation</h3>
+<ul>
+  <li>Instantiates <code>LoginPage</code> in <code>beforeEach</code>, navigating via <code>baseURL</code>.</li>
+  <li><strong>Standard user:</strong> asserts redirect to <code>inventory.html</code>.</li>
+  <li><strong>Locked-out user:</strong> asserts the error banner contains <code>"locked out"</code>.</li>
+  <li>Demonstrates the full POM + fixture + config chain working together.</li>
+</ul>
+
+<h3>inventory.spec.ts &mdash; Inventory Behaviour</h3>
+<ul>
+  <li>Logs in via direct page interactions in <code>beforeEach</code>.</li>
+  <li>Tests: product count (6), sort by price ascending, add to cart, remove from cart.</li>
+  <li>Demonstrates data-driven assertions (mapping displayed prices to numbers and comparing against a sorted copy).</li>
+</ul>
+
+<h3>Test Authoring Conventions</h3>
+<ul>
+  <li><strong>Import from <code>@playwright/test</code></strong> for <code>test</code> and <code>expect</code>.</li>
+  <li>Use <code>beforeEach</code> for setup shared across a <code>describe</code> block.</li>
+  <li>Prefer <strong>user-visible assertions</strong> (<code>toBeVisible</code>, <code>toHaveText</code>, <code>toHaveURL</code>, <code>toHaveCount</code>).</li>
+  <li>Use <code>expect</code> with <code>await</code>; every assertion is auto-retrying.</li>
+  <li>Keep each test focused on one behaviour; use <code>describe</code> for feature grouping.</li>
+  <li>Avoid hard-coded URLs in tests &mdash; use <code>baseURL</code> from config.</li>
+</ul>
+
+<h2>9. Running the Framework</h2>
+<div class="note">
+  <strong>Note:</strong> <code>package.json</code> currently defines <strong>no <code>scripts</code></strong>. Run Playwright directly via <code>npx</code>, or add scripts (recommended &mdash; see below).
+</div>
+
+<h3>Common Commands</h3>
+<table>
+  <thead><tr><th>Goal</th><th>Command</th></tr></thead>
+  <tbody>
+    <tr><td>Run all tests</td><td><code>npx playwright test</code></td></tr>
+    <tr><td>Run a single file</td><td><code>npx playwright test tests/navigate.spec.ts</code></td></tr>
+    <tr><td>Run by title</td><td><code>npx playwright test -g "Login with standard user"</code></td></tr>
+    <tr><td>Run one project</td><td><code>npx playwright test --project=chromium</code></td></tr>
+    <tr><td>Headed mode</td><td><code>npx playwright test --headed</code></td></tr>
+    <tr><td>Debug mode</td><td><code>npx playwright test --debug</code></td></tr>
+    <tr><td>UI mode</td><td><code>npx playwright test --ui</code></td></tr>
+    <tr><td>Show HTML report</td><td><code>npx playwright show-report</code></td></tr>
+    <tr><td>Install browsers</td><td><code>npx playwright install</code></td></tr>
+  </tbody>
+</table>
+
+<h3>Allure Reporting</h3>
+<table>
+  <thead><tr><th>Goal</th><th>Command</th></tr></thead>
+  <tbody>
+    <tr><td>Generate Allure report</td><td><code>npx allure generate allure-results --clean -o allure-report</code></td></tr>
+    <tr><td>Open Allure report</td><td><code>npx allure open allure-report</code></td></tr>
+  </tbody>
+</table>
+<p>Raw results are written to <code>allure-results/</code>; the generated site goes to <code>allure-report/</code>.</p>
+
+<h3>Recommended scripts (add to package.json)</h3>
+<pre><code>"scripts": {
+  "test": "playwright test",
+  "test:headed": "playwright test --headed",
+  "test:ui": "playwright test --ui",
+  "test:chromium": "playwright test --project=chromium",
+  "report": "playwright show-report",
+  "allure:generate": "allure generate allure-results --clean -o allure-report",
+  "allure:open": "allure open allure-report"
+}</code></pre>
+
+<h3>Regenerating this document</h3>
+<p>This document is generated from <code>FRAMEWORK.html</code> using the project's own Playwright Chromium:</p>
+<pre><code>node scripts/generate-framework-pdf.js</code></pre>
+<p>The script resolves the placeholder tokens used for angle brackets inside code samples and writes <code>FRAMEWORK.pdf</code>.</p>
+
+<h2>10. Reporting & Artifacts</h2>
+<table>
+  <thead><tr><th>Output</th><th>Location</th><th>Contents</th></tr></thead>
+  <tbody>
+    <tr><td>HTML report</td><td><code>playwright-report/</code></td><td>Interactive results, per-test steps, traces</td></tr>
+    <tr><td>Allure raw</td><td><code>allure-results/</code></td><td>JSON results + attachments for Allure</td></tr>
+    <tr><td>Test artifacts</td><td><code>test-results/</code></td><td>Traces, screenshots, videos for failures</td></tr>
+  </tbody>
+</table>
+<p><strong>Trace capture</strong> is set to <code>on-first-retry</code>. When a test fails and retries, Playwright records a trace openable with <code>npx playwright show-trace @@LT@@trace.zip@@GT@@</code> &mdash; invaluable for post-mortem debugging on CI.</p>
+<p>All three output directories are git-ignored and regenerated per run.</p>
+
+<h2>11. Framework Data Flow</h2>
+<pre class="flow"><code>                 ┌─────────────────────────┐
+                 │   playwright.config.ts  │
+                 │  baseURL, projects,     │
+                 │  retries, reporters     │
+                 └────────────┬────────────┘
+                              │ imports ENV
+                              ▼
+                 ┌─────────────────────────┐
+   .env  ──────► │  utils/envHelpers.ts    │  ──► ENV (Record@@LT@@string,string@@GT@@)
+                 │  (parses .env)          │
+                 └────────────┬────────────┘
+                              │
+                              ▼
+                 ┌─────────────────────────┐
+                 │   fixtures/test.ts      │  getUser(role) ──► {username,password}
+                 └────────────┬────────────┘
+                              │
+                              ▼
+   ┌─────────────────┐   ┌───────────────┐   ┌──────────────────────┐
+   │  tests/*.spec   │──►│ pages/*Page   │──►│  Browser (chromium)  │
+   │  (test intent)  │   │  (locators +  │   │  application under   │
+   │                 │   │   actions)    │   │  test                │
+   └─────────────────┘   └───────────────┘   └──────────────────────┘
+                              │
+                              ▼
+                 ┌─────────────────────────┐
+                 │  Reports: HTML + Allure │
+                 └─────────────────────────┘</code></pre>
+<p><strong>Flow summary:</strong> Config loads <code>ENV</code> &rarr; fixtures use <code>ENV</code> to build role-based credentials &rarr; specs consume fixtures and drive Page Objects &rarr; Page Objects act on the browser &rarr; results flow to reporters.</p>
+
+<h2>12. Coding Standards & Conventions</h2>
+<h3>File & Naming</h3>
+<ul>
+  <li>Test specs: <code>*.spec.ts</code>, lowerCamelCase topic (<code>navigate.spec.ts</code>).</li>
+  <li>Page objects: <code>PascalCase</code> class, file matches class (<code>LoginPage.ts</code>).</li>
+  <li>Utilities: lowerCamelCase file (<code>envHelpers.ts</code>).</li>
+  <li>One primary export per file.</li>
+</ul>
+<h3>TypeScript</h3>
+<ul>
+  <li>Prefer explicit types; avoid <code>any</code>.</li>
+  <li>Use union types for constrained value sets (see <code>UserType</code>).</li>
+  <li>Guard clauses throw with actionable messages.</li>
+  <li>Keep page objects declarative and free of business assertions.</li>
+</ul>
+<h3>Locators</h3>
+<ul>
+  <li>Prefer <code>data-test</code> attributes and Playwright's user-facing locators over CSS/XPath.</li>
+  <li>Never use index-based locators where a stable attribute exists.</li>
+  <li>Define locators once (constructor), never inline in multiple methods.</li>
+</ul>
+<h3>Tests</h3>
+<ul>
+  <li>One behaviour per test; descriptive <code>test('...')</code> titles.</li>
+  <li>Shared setup in <code>beforeEach</code>.</li>
+  <li>Assertions via auto-retrying <code>expect</code>.</li>
+</ul>
+
+<h2>13. Extending the Framework</h2>
+<h3>Add a New Page</h3>
+<ol>
+  <li>Create <code>pages/@@LT@@Name@@GT@@Page.ts</code> with <code>readonly</code> locators and <code>async</code> actions.</li>
+  <li>Reference it from specs via the <code>page</code> fixture.</li>
+</ol>
+
+<h3>Add a New Test Data Set</h3>
+<ol>
+  <li>Add keys to <code>.env</code>.</li>
+  <li>Extend the relevant fixture map / type.</li>
+</ol>
+
+<h3>Add a New Browser</h3>
+<p>Uncomment the desired block in <code>projects</code> <strong>or</strong> add:</p>
+<pre><code>{ name: 'firefox', use: { ...devices['Desktop Firefox'] } },</code></pre>
+
+<h3>Add a New Test Layer (e.g. API checks)</h3>
+<ul>
+  <li>Create <code>tests/api/</code> and use Playwright's <code>request</code> fixture.</li>
+  <li>Keep a separate <code>api/</code> client folder for endpoint wrappers.</li>
+</ul>
+
+<h3>Recommended Future Enhancements</h3>
+<table>
+  <thead><tr><th>Enhancement</th><th>Benefit</th></tr></thead>
+  <tbody>
+    <tr><td><code>package.json</code> scripts</td><td>One-word commands (<code>npm test</code>).</td></tr>
+    <tr><td><code>.env.example</code></td><td>Documents required variables without secrets.</td></tr>
+    <tr><td>Playwright fixtures (<code>test.extend</code>)</td><td>Auto-inject Page Objects instead of manual <code>new</code>.</td></tr>
+    <tr><td>CI pipeline (GitHub Actions)</td><td>Automated runs on push/PR with Allure publishing.</td></tr>
+    <tr><td><code>storageState</code> auth reuse</td><td>Skip UI login per test; faster suites.</td></tr>
+    <tr><td>ESLint + Prettier</td><td>Consistent style enforcement.</td></tr>
+    <tr><td><code>expect</code> timeout / retry tuning</td><td>Stability on slow environments.</td></tr>
+  </tbody>
+</table>
+
+<h2>14. Troubleshooting</h2>
+<table>
+  <thead><tr><th>Symptom</th><th>Likely Cause</th><th>Resolution</th></tr></thead>
+  <tbody>
+    <tr><td><code>Missing credentials for user type "..."</code></td><td><code>.env</code> key absent or blank</td><td>Add the key(s) to <code>.env</code>.</td></tr>
+    <tr><td>Tests hit wrong site</td><td><code>BASE_URL</code> wrong or unset</td><td>Check <code>.env</code>; fallback is SauceDemo.</td></tr>
+    <tr><td>Browser launch failure</td><td>Browsers not installed</td><td><code>npx playwright install</code>.</td></tr>
+    <tr><td>Flaky tests on CI</td><td>Timing / parallelism</td><td>Rely on <code>retries: 2</code>; tighten waits using auto-retrying assertions.</td></tr>
+    <tr><td>Allure report empty</td><td><code>allure-results/</code> missing</td><td>Run tests first; then <code>allure generate</code>.</td></tr>
+    <tr><td>Locators not found</td><td>UI changed</td><td>Update the affected Page Object only.</td></tr>
+  </tbody>
+</table>
+
+<h2>15. Summary</h2>
+<p>This framework applies the <strong>Page Object Model</strong>, a <strong>centralized configuration</strong>, an <strong>environment abstraction layer</strong>, and a <strong>role-based test-data provider</strong> to produce readable, maintainable, and debuggable Playwright tests in TypeScript. Tests express intent; Page Objects own UI detail; <code>envHelpers</code> and <code>fixtures</code> own data; and dual HTML + Allure reporting provides rich diagnostics. Extending the suite follows clear conventions: add a <code>pages/*</code> class for new screens, a fixture for new data, and a <code>*.spec.ts</code> for new behaviour &mdash; the rest of the framework stays untouched.</p>
+
+<div class="doc-footer">
+  Playwright Automation Framework &mdash; Framework Documentation v1.0
+</div>
+
+</section>
+</body>
+</html>
