@@ -15,9 +15,9 @@ jobs:
           "tests/inventory.spec.ts",
           "tests/navigate.spec.ts"
         ]
-        # # Define the shard indices to balance the run
-        # shardIndex: [1, 2]
-        # shardTotal: [2]
+          # FIX: Explicitly defined numbers so they evaluate properly
+        shardIndex: [1]
+        shardTotal: [1]
     steps:
     - uses: actions/checkout@v6
     - uses: actions/setup-node@v6
