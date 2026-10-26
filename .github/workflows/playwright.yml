@@ -35,8 +35,7 @@ jobs:
           test-results/
           allure-results/
         retention-days: 7
-
-    merge-reports:
+  merge-reports:
       if: ${{ !cancelled() }}
       needs: [playwright-tests]
       runs-on: ubuntu-latest
