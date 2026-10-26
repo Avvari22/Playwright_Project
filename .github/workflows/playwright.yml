@@ -25,7 +25,7 @@ jobs:
     - name: Run Playwright tests
       run: npx playwright test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
-   - name: Upload Shard Raw Outputs (Blobs & Test Results)
+    - name: Upload Shard Raw Outputs (Blobs & Test Results)
       if: ${{ !cancelled() }}
       uses: actions/upload-artifact@v4
       with:
