@@ -24,6 +24,8 @@
     "test:debug": "playwright test --debug",
     "test:chrome": "playwright test --project=chromium",
     "test:mobile": "playwright test --project=mobile-chrome --project=mobile-safari",
-    "report": "playwright show-report"
+    "report": "playwright show-report",
+    "clean": "if exist playwright-report rmdir /s /q playwright-report && if exist test-results rmdir /s /q test-results && if exist allure-results rmdir /s /q allure-results",
+    "test1": "npm run clean && npx playwright test"
   }
 }
