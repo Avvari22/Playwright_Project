@@ -36,33 +36,38 @@ jobs:
           allure-results/
         retention-days: 7
 
-    merge-reports:
-      if: ${{ !cancelled() }}
-      needs: [playwright-tests]
-      runs-on: ubuntu-latest
-      steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20 # Keep this at 20 to prevent the Node runtime error
-          
-      - name: Install dependencies
-        run: npm ci
+  merge-reports:
+    if: ${{ !cancelled() }}
+    needs: [playwright-tests]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        
+    - name: Install dependencies
+      run: npm ci
 
-      - name: Download all shard outputs
-        uses: actions/download-artifact@v4
-        with:
-          path: all-shard-inputs
-          pattern: shard-outputs-*
-          merge-multiple: true
+    - name: Download all shard outputs
+      uses: actions/download-artifact@v4
+      with:
+        path: all-shard-inputs
+        pattern: shard-outputs-*
+        merge-multiple: true
 
-      # FIX: Point the command to the subfolder where the blobs actually live
-      - name: Merge blobs into HTML Report
-        run: npx playwright merge-reports --reporter html ./all-shard-inputs/blob-report
+    # Merges binary blobs into a single HTML file AND extracts a single merged JSON log file
+    - name: Merge blobs into HTML and JSON Reports
+      run: |
+        npx playwright merge-reports --reporter html,json ./all-shard-inputs
+      env:
+        PLAYWRIGHT_JSON_OUTPUT_NAME: merged-results.json
 
-      - name: Upload Final Consolidated Reports
-        uses: actions/upload-artifact@v4
-        with:
-          name: final-test-reports
-          path: playwright-report/
-          retention-days: 30
+    - name: Upload Final Consolidated Reports
+      uses: actions/upload-artifact@v4
+      with:
+        name: final-test-reports
+        path: |
+          playwright-report/
+          merged-results.json
+        retention-days: 30
