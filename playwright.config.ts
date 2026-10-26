@@ -26,8 +26,10 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: process.env.CI ? [['blob', { outputDir: 'blob-report' }]] : [
-    ['html',{open:'never'}],
-    // ["allure-playwright"],
+    ['html', { open: 'never' }],
+    ['allure-playwright', {
+      resultsDir: 'allure-results'
+    }],
     ['./utils/time-reporter.ts'],
     // ['./utils/cleanup-reporter.ts']
   ],
