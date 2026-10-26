@@ -10,8 +10,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shardIndex: [1]
-        shardTotal: [1]
+        # Define the targeted spec files
+        specFile: [
+          "tests/inventory.spec.ts",
+          "tests/navigate.spec.ts"
+        ]
+        # Define the shard indices to balance the run
+        shardIndex: [1, 2]
+        shardTotal: [2]
     steps:
     - uses: actions/checkout@v6
     - uses: actions/setup-node@v6
