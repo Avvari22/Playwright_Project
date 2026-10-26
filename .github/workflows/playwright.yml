@@ -25,8 +25,7 @@ jobs:
     - name: Run Playwright tests
       run: npx playwright test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
-   # 1. UPLOAD RAW BLOBS & RAW TEST RESULTS PER SHARD
-    - name: Upload Shard Raw Outputs (Blobs & Test Results)
+   - name: Upload Shard Raw Outputs (Blobs & Test Results)
       if: ${{ !cancelled() }}
       uses: actions/upload-artifact@v4
       with:
@@ -43,14 +42,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+    
+    # 2. Update Node.js version here to 20 as well
     - uses: actions/setup-node@v4
       with:
-        node-version: 18
+        node-version: 20
         
     - name: Install dependencies
       run: npm ci
 
-    # Download everything uploaded by the parallel jobs
     - name: Download all shard outputs
       uses: actions/download-artifact@v4
       with:
@@ -58,18 +58,16 @@ jobs:
         pattern: shard-outputs-*
         merge-multiple: true
 
-    # 2. MERGE BLOBS INTO THE FINAL PLAYWRIGHT HTML REPORT
+    # This will now succeed without the Node.js warning
     - name: Merge blobs into HTML Report
       run: npx playwright merge-reports --reporter html ./all-shard-inputs
 
-    # 3. GENERATE ALLURE REPORT (If using allure-playwright CLI)
     - name: Generate Allure Report
       if: hashFiles('all-shard-inputs/allure-results/**') != ''
       run: |
         npm install -g allure-commandline
         allure generate ./all-shard-inputs/allure-results -o allure-report --clean
 
-    # 4. UPLOAD THE FINAL UNIFIED REPORTS
     - name: Upload Final Consolidated Reports
       uses: actions/upload-artifact@v4
       with:
