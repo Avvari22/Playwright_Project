@@ -1,9 +1,9 @@
 name: Playwright Tests
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
 jobs:
   playwright-tests:
     runs-on: ubuntu-latest
@@ -11,76 +11,85 @@ jobs:
       fail-fast: false
       matrix:
         # Define the targeted spec files
-        specFile: [
-          "tests/inventory.spec.ts",
-          "tests/navigate.spec.ts"
-        ]
+        specFile:
+          ["tests/inventory.spec.ts", "tests/navigate.spec.ts"]
           # FIX: Explicitly defined numbers so they evaluate properly
         shardIndex: [1]
         shardTotal: [1]
     steps:
-    - uses: actions/checkout@v6
-    - uses: actions/setup-node@v6
-      with:
-        node-version: lts/*
-    - name: Install dependencies
-      run: npm ci
-    - name: Install Playwright browsers
-      run: npx playwright install --with-deps
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
 
-    - name: Run Playwright tests
-      run: npx playwright test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+      - name: Run Playwright tests
+        run: npx playwright test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
-    - name: Upload Shard Raw Outputs (Blobs & Test Results)
-      if: ${{ !cancelled() }}
-      uses: actions/upload-artifact@v4
-      with:
-        name: shard-outputs-${{ matrix.shard }}
-        path: |
-          blob-report/
-          test-results/
-          allure-results/
-        retention-days: 7
+      - name: Upload Shard Raw Outputs (Blobs & Test Results)
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: shard-outputs-${{ matrix.shard }}
+          path: |
+            blob-report/
+            test-results/
+            allure-results/
+          retention-days: 7
 
   merge-reports:
     if: ${{ !cancelled() }}
     needs: [playwright-tests]
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: 20
-        
-    - name: Install dependencies
-      run: npm ci
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-    - name: Download all shard outputs
-      uses: actions/download-artifact@v4
-      with:
-        path: all-shard-inputs
-        pattern: shard-outputs-*
-        merge-multiple: true
+      - name: Install dependencies
+        run: npm ci
 
-    # FIX STEP: Find any hidden blob zip files inside subfolders and flatten them to the root
-    - name: Flatten Blob Directory Structure
-      run: |
-        find ./all-shard-inputs -name "*.zip" -exec mv -t ./all-shard-inputs {} +
-        echo "=== Files present in merge root ==="
-        ls -la ./all-shard-inputs
+      - name: Download all shard outputs
+        uses: actions/download-artifact@v4
+        with:
+          path: all-shard-inputs
+          pattern: shard-outputs-*
+          merge-multiple: true
 
-    # This will now cleanly grab the flattened zip blobs in the folder root
-    - name: Merge blobs into HTML and JSON Reports
-      run: |
-        npx playwright merge-reports --reporter html,json ./all-shard-inputs
-      env:
-        PLAYWRIGHT_JSON_OUTPUT_NAME: merged-results.json
+      # FIX STEP: Find any hidden blob zip files inside subfolders and flatten them to the root
+      - name: Flatten Blob Directory Structure
+        run: |
+          find ./all-shard-inputs -name "*.zip" -exec mv -t ./all-shard-inputs {} +
+          echo "=== Files present in merge root ==="
+          ls -la ./all-shard-inputs
 
-    - name: Upload Final Consolidated Reports
-      uses: actions/upload-artifact@v4
-      with:
-        name: final-test-reports
-        path: |
-          playwright-report/
-          merged-results.json
-        retention-days: 30
+      # This will now cleanly grab the flattened zip blobs in the folder root
+      - name: Merge blobs into HTML and JSON Reports
+        run: |
+          npx playwright merge-reports --reporter html,json ./all-shard-inputs
+        env:
+          PLAYWRIGHT_JSON_OUTPUT_NAME: merged-results.json
+
+        # 2. Set up Allure Commandline Tooling
+      - name: Install Allure Commandline
+        run: npm install -g allure-commandline
+
+      # 3. Consolidate separate allure-results folders and compile the final static report site
+      - name: Generate Allure Report
+        run: |
+          allure generate ./all-shard-inputs/allure-results -o allure-report --clean
+
+      # 4. Upload all unified assets to GitHub Artifacts (Playwright HTML, JSON, and Allure)
+      - name: Upload Final Consolidated Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: final-test-reports
+          path: |
+            playwright-report/
+            merged-results.json
+            allure-report/
+          retention-days: 30
