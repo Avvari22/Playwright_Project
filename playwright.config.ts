@@ -27,10 +27,10 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: process.env.CI ? [['blob', { outputDir: 'blob-report' }]] : [
     ['html'],
-  // ["allure-playwright"],
-  ['./utils/time-reporter.ts'],
-  // ['./utils/cleanup-reporter.ts']
-],
+    // ["allure-playwright"],
+    ['./utils/time-reporter.ts'],
+    // ['./utils/cleanup-reporter.ts']
+  ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
