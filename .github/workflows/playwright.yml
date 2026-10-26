@@ -56,7 +56,14 @@ jobs:
         pattern: shard-outputs-*
         merge-multiple: true
 
-    # Merges binary blobs into a single HTML file AND extracts a single merged JSON log file
+    # FIX STEP: Find any hidden blob zip files inside subfolders and flatten them to the root
+    - name: Flatten Blob Directory Structure
+      run: |
+        find ./all-shard-inputs -name "*.zip" -exec mv -t ./all-shard-inputs {} +
+        echo "=== Files present in merge root ==="
+        ls -la ./all-shard-inputs
+
+    # This will now cleanly grab the flattened zip blobs in the folder root
     - name: Merge blobs into HTML and JSON Reports
       run: |
         npx playwright merge-reports --reporter html,json ./all-shard-inputs
