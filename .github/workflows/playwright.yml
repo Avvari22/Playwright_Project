@@ -36,43 +36,33 @@ jobs:
           allure-results/
         retention-days: 7
 
-  merge-reports:
-    if: ${{ !cancelled() }}
-    needs: [playwright-tests]
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    
-    # 2. Update Node.js version here to 20 as well
-    - uses: actions/setup-node@v4
-      with:
-        node-version: 20
-        
-    - name: Install dependencies
-      run: npm ci
+    merge-reports:
+      if: ${{ !cancelled() }}
+      needs: [playwright-tests]
+      runs-on: ubuntu-latest
+      steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20 # Keep this at 20 to prevent the Node runtime error
+          
+      - name: Install dependencies
+        run: npm ci
 
-    - name: Download all shard outputs
-      uses: actions/download-artifact@v4
-      with:
-        path: all-shard-inputs
-        pattern: shard-outputs-*
-        merge-multiple: true
+      - name: Download all shard outputs
+        uses: actions/download-artifact@v4
+        with:
+          path: all-shard-inputs
+          pattern: shard-outputs-*
+          merge-multiple: true
 
-    # This will now succeed without the Node.js warning
-    - name: Merge blobs into HTML Report
-      run: npx playwright merge-reports --reporter html ./all-shard-inputs
+      # FIX: Point the command to the subfolder where the blobs actually live
+      - name: Merge blobs into HTML Report
+        run: npx playwright merge-reports --reporter html ./all-shard-inputs/blob-report
 
-    - name: Generate Allure Report
-      if: hashFiles('all-shard-inputs/allure-results/**') != ''
-      run: |
-        npm install -g allure-commandline
-        allure generate ./all-shard-inputs/allure-results -o allure-report --clean
-
-    - name: Upload Final Consolidated Reports
-      uses: actions/upload-artifact@v4
-      with:
-        name: final-test-reports
-        path: |
-          playwright-report/
-          allure-report/
-        retention-days: 30
+      - name: Upload Final Consolidated Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: final-test-reports
+          path: playwright-report/
+          retention-days: 30
