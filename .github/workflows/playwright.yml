@@ -93,3 +93,10 @@ jobs:
             merged-results.json
             allure-report/
           retention-days: 30
+      # 🚀 HOST EXTERNALLY (GitHub Pages)
+      - name: Deploy Report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-report
