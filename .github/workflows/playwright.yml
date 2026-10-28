@@ -95,6 +95,17 @@ jobs:
     # environment:
     #   name: github-pages
 
+      - name: Display Allure Report URL
+        if: github.event_name != 'pull_request'
+        env:
+          REPORT_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          echo "Allure Report URL: $REPORT_URL"
+
+          echo "## Playwright Allure Report" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "[View Allure Report]($REPORT_URL)" >> "$GITHUB_STEP_SUMMARY"
+
       - name: Fail workflow if tests failed
         if: steps.tests.outcome == 'failure'
         run: exit 1
