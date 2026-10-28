@@ -13,27 +13,39 @@ permissions:
   pages: write
   id-token: write
 
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   playwright-tests:
     runs-on: ubuntu-latest
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
+      # Step 1: Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Step 2: Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
 
+      # Step 3: Install dependencies
       - name: Install dependencies
         run: npm ci
 
+      # Step 4: Install Playwright browsers
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
+      # Step 5: Run Playwright tests
       - name: Run Playwright tests
         id: tests
         continue-on-error: true
@@ -42,10 +54,11 @@ jobs:
             tests/inventory.spec.ts \
             tests/navigate.spec.ts
 
+      # Step 6: Verify Allure results
       - name: Verify Allure Results
         if: always()
         run: |
-          echo "Checking Allure result files"
+          echo "Checking Allure result files..."
 
           if [ ! -d "allure-results" ]; then
             echo "::error::allure-results directory missing"
@@ -64,60 +77,59 @@ jobs:
             exit 1
           fi
 
+          echo "Allure results verified successfully"
+
+      # Step 7: Install Allure CLI
       - name: Install Allure CLI
         run: npm install -g allure-commandline
 
+      # Step 8: Generate Allure HTML report
       - name: Generate Allure Report
         run: |
           allure generate allure-results \
             --clean \
             -o allure-report
 
+      # Step 9: Upload Allure report artifact
       - name: Upload Allure Report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: allure-report
-          path: allure-report/
+          path: |
+            allure-report/
+            allure-results/
+            playwright-report/
+            test-results/
           retention-days: 30
+          if-no-files-found: warn
 
+      # Step 10: Configure GitHub Pages
       - name: Configure GitHub Pages
         if: github.event_name != 'pull_request'
         uses: actions/configure-pages@v5
 
+      # Step 11: Upload GitHub Pages artifact
       - name: Upload Pages Artifact
         if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v4
         with:
           path: allure-report/
 
+      # Step 12: Deploy Allure report
       - name: Deploy Allure Report
         if: github.event_name != 'pull_request'
         id: deployment
         uses: actions/deploy-pages@v4
-    # environment:
-    #   name: github-pages
 
-      - name: Display Allure Report URL
+      # Step 13: Display report URL in Summary
+      - name: Publish Allure Report Link
         if: github.event_name != 'pull_request'
         env:
           REPORT_URL: ${{ steps.deployment.outputs.page_url }}
         run: |
           echo "Allure Report URL: $REPORT_URL"
 
-          echo "## Playwright Allure Report" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "[View Allure Report]($REPORT_URL)" >> "$GITHUB_STEP_SUMMARY"
-      
-      - name: Deploy to GitHub Pages
-        if: github.event_name != 'pull_request'
-        id: deployment
-        uses: actions/deploy-pages@v4
-
-      - name: Publish Allure Report Link
-        if: github.event_name != 'pull_request'
-        env:
-          REPORT_URL: ${{ steps.deployment.outputs.page_url }}
-        run: |
           echo "## Playwright Automation - Allure Report" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "### Test Execution Report" >> "$GITHUB_STEP_SUMMARY"
@@ -126,6 +138,9 @@ jobs:
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "Report URL: $REPORT_URL" >> "$GITHUB_STEP_SUMMARY"
 
+      # Step 14: Fail workflow if tests failed
       - name: Fail workflow if tests failed
-        if: steps.tests.outcome == 'failure'
-        run: exit 1
+        if: always() && steps.tests.outcome == 'failure'
+        run: |
+          echo "::error::Playwright tests failed"
+          exit 1
