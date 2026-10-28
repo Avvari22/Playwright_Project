@@ -16,7 +16,9 @@ permissions:
 jobs:
   playwright-tests:
     runs-on: ubuntu-latest
-
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -105,6 +107,24 @@ jobs:
           echo "## Playwright Allure Report" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "[View Allure Report]($REPORT_URL)" >> "$GITHUB_STEP_SUMMARY"
+      
+      - name: Deploy to GitHub Pages
+        if: github.event_name != 'pull_request'
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Publish Allure Report Link
+        if: github.event_name != 'pull_request'
+        env:
+          REPORT_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          echo "## Playwright Automation - Allure Report" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Test Execution Report" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "[View Allure Report]($REPORT_URL)" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Report URL: $REPORT_URL" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Fail workflow if tests failed
         if: steps.tests.outcome == 'failure'
