@@ -3,21 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "dependencies": {
-    "playwright": "^1.64.0"
-  },
-  "devDependencies": {
-    "@playwright/test": "^1.64.0",
-    "@types/node": "^26.6.5",
-    "allure-commandline": "^2.36.0",
-    "allure-playwright": "^3.4.3"
-  },
-   "scripts": {
+  "scripts": {
     "test": "playwright test",
     "test:headed": "playwright test --headed",
     "test:ui": "playwright test --ui",
@@ -27,5 +13,19 @@
     "report": "playwright show-report",
     "clean": "if exist playwright-report rmdir /s /q playwright-report && if exist test-results rmdir /s /q test-results && if exist allure-results rmdir /s /q allure-results",
     "test1": "npm run clean && npx playwright test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "allure": "^3.22.1",
+    "playwright": "^1.64.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.0",
+    "@types/node": "^26.6.5",
+    "allure-commandline": "^2.46.1",
+    "allure-playwright": "^3.4.3"
   }
 }

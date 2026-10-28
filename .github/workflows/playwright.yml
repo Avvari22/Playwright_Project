@@ -1,4 +1,6 @@
 name: Playwright Tests
+permissions:
+  contents: write
 on:
   push:
     branches: [main, master]
