@@ -71,6 +71,15 @@ pipeline {
                 '''
             }
         }
+
+        stage('Publish Allure Report') {
+            post {
+                always {
+                    // Triggers the Allure Jenkins Plugin to build and host the dashboard
+                    allure includeProperties: false, jdk: '', results: [[path: 'allure-results']]
+                }
+            }
+        }
     }
 
     post {
