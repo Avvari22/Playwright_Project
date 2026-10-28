@@ -1,8 +1,6 @@
 
 pipeline {
-    agent {
-        label 'windows-playwright'
-    }
+    agent any
 
     options {
         timestamps()
