@@ -97,8 +97,9 @@ jobs:
           retention-days: 30
       # 🚀 HOST EXTERNALLY (GitHub Pages)
       - name: Deploy Report to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+        uses: allure-framework/allure-action@v0
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: allure-report
+          report-directory: "./allure-report"
+          github-token: ${{ github.token }}
+          pr-number: ${{ github.event.issue.number }}
+          head-sha: ${{ steps.pr.outputs.head-sha }}
