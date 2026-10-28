@@ -25,13 +25,10 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: process.env.CI ? [['blob', { outputDir: 'blob-report' }]] : [
-    ['html', { outputFolder: 'playwright-report' }],
-    ['allure-playwright', {
-      resultsDir: 'allure-results'
-    }],
-    ['./utils/time-reporter.ts'],
-    // ['./utils/cleanup-reporter.ts']
+   reporter: [
+    ['list'],
+    ['html', { outputFolder: 'playwright-report', open: 'never' }],
+    ['allure-playwright', { resultsDir: 'allure-results' }]
   ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
