@@ -1,12 +1,18 @@
+
 pipeline {
     agent {
-        docker {
-            image 'mcr.microsoft.com/playwright:v1.64.0-noble'
-        }
+        label 'windows-playwright'
+    }
+
+    options {
+        timestamps()
+        skipDefaultCheckout(true)
+        disableConcurrentBuilds()
     }
 
     environment {
         CI = 'true'
+        PLAYWRIGHT_BROWSERS_PATH = '0'
     }
 
     stages {
@@ -16,39 +22,78 @@ pipeline {
             }
         }
 
-        stage('Install dependencies') {
+        stage('Verify Environment') {
             steps {
-                sh 'npm ci'
+                bat '''
+                    node --version
+                    npm --version
+                    java -version
+                    git --version
+                '''
             }
         }
 
-        stage('Run Playwright tests') {
+        stage('Install Dependencies') {
             steps {
-                sh 'npm test'
+                bat 'npm ci'
+            }
+        }
+
+        stage('Install Playwright Browsers') {
+            steps {
+                bat 'npx playwright install chromium'
+            }
+        }
+
+        stage('Run Playwright Tests') {
+            steps {
+                script {
+                    def exitCode = bat(
+                        script: 'npx playwright test',
+                        returnStatus: true
+                    )
+
+                    if (exitCode != 0) {
+                        currentBuild.result = 'FAILURE'
+                        echo "Playwright tests failed: ${exitCode}"
+                    }
+                }
+            }
+        }
+
+        stage('Generate Allure Report') {
+            steps {
+                bat '''
+                    if not exist allure-results (
+                        echo Allure results directory missing
+                        exit /b 1
+                    )
+
+                    npx allure generate allure-results --clean -o allure-report
+                '''
             }
         }
     }
 
     post {
         always {
-            sh '''
-                if [ ! -d "allure-results" ]; then
-                    echo "ERROR: allure-results directory is missing"
-                    exit 1
-                fi
+            archiveArtifacts(
+                artifacts: 'allure-results/**,allure-report/**,playwright-report/**,test-results/**,junit-results/**',
+                allowEmptyArchive: true
+            )
 
-                result_count=$(find allure-results -type f -name '*-result.json' | wc -l)
-                echo "Allure test results: $result_count"
+            junit(
+                testResults: 'junit-results/*.xml',
+                allowEmptyResults: true
+            )
+        }
 
-                if [ "$result_count" -eq 0 ]; then
-                    echo "ERROR: No Allure test results were generated"
-                    exit 1
-                fi
+        success {
+            echo 'All Playwright tests passed!'
+        }
 
-                npx allure generate allure-results --clean -o allure-report
-            '''
-
-            archiveArtifacts artifacts: 'allure-report/**,allure-results/**,playwright-report/**,test-results/**', allowEmptyArchive: true
+        failure {
+            echo 'Build failed. Review Allure and Playwright reports.'
         }
     }
 }
