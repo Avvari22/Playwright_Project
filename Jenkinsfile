@@ -1,4 +1,3 @@
-
 pipeline {
     agent any
 
@@ -51,8 +50,9 @@ pipeline {
                         returnStatus: true
                     )
 
+                    // Setting build status to UNSTABLE allows succeeding reporting stages to continue executing
                     if (exitCode != 0) {
-                        currentBuild.result = 'FAILURE'
+                        currentBuild.result = 'UNSTABLE'
                         echo "Playwright tests failed: ${exitCode}"
                     }
                 }
@@ -66,18 +66,15 @@ pipeline {
                         echo Allure results directory missing
                         exit /b 1
                     )
-
                     npx allure generate allure-results --clean -o allure-report
                 '''
             }
         }
 
         stage('Publish Allure Report') {
-            post {
-                always {
-                    // Triggers the Allure Jenkins Plugin to build and host the dashboard
-                    allure includeProperties: false, jdk: '', results: [[path: 'allure-results']]
-                }
+            steps {
+                // Correctly wrapping the native plugin step within the required 'steps' block
+                allure includeProperties: false, jdk: '', results: [[path: 'allure-results']]
             }
         }
     }
